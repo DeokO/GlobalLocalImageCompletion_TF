@@ -8,7 +8,7 @@ class network():
     def __init__(self, args):
 
         self.batch_size = args.batch_size
-        self.input_dim = args.input_dim 
+        self.input_dim = args.input_dim
 
         self.local_width, self.local_height = args.local_input_width, args.local_input_height
 
@@ -28,8 +28,8 @@ class network():
         self.build_loss()
 
         #summary
-        self.recon_loss_sum = tf.summary.scalar("recon_loss", self.recon_loss) 
-        self.d_loss_sum = tf.summary.scalar("d_loss", self.d_loss) 
+        self.recon_loss_sum = tf.summary.scalar("recon_loss", self.recon_loss)
+        self.d_loss_sum = tf.summary.scalar("d_loss", self.d_loss)
         self.loss_all_sum = tf.summary.scalar("loss_all", self.loss_all)
         self.input_img_sum = tf.summary.image("input_img", self.perturbed_img, max_outputs=5)
         self.real_img_sum = tf.summary.image("real_img", self.real_img, max_outputs=5)
@@ -54,16 +54,16 @@ class network():
         self.test_res_imgs = (1-self.single_mask)*self.single_orig + self.single_mask*self.test_res_imgs
 
         self.r_local_imgs = []
-        self.g_local_imgs = [] 
+        self.g_local_imgs = []
         for idx in range(0,self.real_img.shape[0]):
             r_cropped = rand_crop(self.real_img[idx], self.coord[idx], self.pads[idx])
             g_cropped = rand_crop(self.recon_img[idx], self.coord[idx], self.pads[idx])
-            self.r_local_imgs.append(r_cropped)
-            self.g_local_imgs.append(g_cropped)
+            self.r_local_imgs.append(r_cropped) #(32, 32, 3)
+            self.g_local_imgs.append(g_cropped) #(32, 32, 3)
 
 
-        self.r_local_imgs = tf.convert_to_tensor(self.r_local_imgs)
-        self.g_local_imgs = tf.convert_to_tensor(self.g_local_imgs)
+        self.r_local_imgs = tf.convert_to_tensor(self.r_local_imgs) #(64, 32, 32, 3)
+        self.g_local_imgs = tf.convert_to_tensor(self.g_local_imgs) #(64, 32, 32, 3)
         
         #global discriminator setting
         self.local_fake_d_logits, self.local_fake_d_net = self.local_discriminator(self.g_local_imgs, name="local_discriminator")
@@ -166,8 +166,8 @@ class network():
                           padding="SAME",
                           name="conv6"
                           )
-            conv6 = batch_norm(conv5, name="conv_bn6")
-            conv6 = tf.nn.relu(conv5)
+            conv6 = batch_norm(conv6, name="conv_bn6")
+            conv6 = tf.nn.relu(conv6)
 
             #Dilated conv from here
             dilate_conv1 = dilate_conv2d(conv6, 
@@ -209,7 +209,7 @@ class network():
             conv8 = batch_norm(conv8, name="conv_bn8")
             conv8 = tf.nn.relu(conv8)
 
-            deconv1 = deconv2d(conv8, [self.batch_size, input_shape[1]/2, input_shape[2]/2, 128], name="deconv1")
+            deconv1 = deconv2d(conv8, [self.batch_size, int(input_shape[1]/2), int(input_shape[2]/2), 128], name="deconv1")
             deconv1 = batch_norm(deconv1, name="deconv_bn1")
             deconv1 = tf.nn.relu(deconv1)
 
@@ -321,7 +321,7 @@ class network():
                                      padding="VALID",
                                      activation_fn=None,
                                      scope="conv3")
-            conv3 = batch_norm(conv1, name="bn3")
+            conv3 = batch_norm(conv3, name="bn3")
             conv3 = tf.nn.relu(conv3)
             nets.append(conv3)
 

@@ -12,11 +12,11 @@ def block_patch(input, margin=5):
 	#create patch in random size
 	pad_size = tf.random_uniform([2], minval=15, maxval=25, dtype=tf.int32)
 	patch = tf.zeros([pad_size[0], pad_size[1], shape[-1]], dtype=tf.float32)
- 	
+
 	h_ = tf.random_uniform([1], minval=margin, maxval=shape[0]-pad_size[0]-margin, dtype=tf.int32)[0]
 	w_ = tf.random_uniform([1], minval=margin, maxval=shape[1]-pad_size[1]-margin, dtype=tf.int32)[0]
-	
-	padding = [[h_, shape[0]-h_-pad_size[0]], [w_, shape[1]-w_-pad_size[1]], [0, 0]]
+
+	padding = [[h_, shape[0]-h_-pad_size[0]], [w_, shape[1]-w_-pad_size[1]], [0, 0]] # [[top, bottom, [left, right], [n-th, m-th channel]]
 	padded = tf.pad(patch, padding, "CONSTANT", constant_values=1)
 
 	coord = h_, w_
@@ -51,12 +51,11 @@ def load_train_data(args):
 	mask = -(mask - 1)
 	images += mask
 
-	orig_imgs, perturbed_imgs, mask, coord, pad_size = tf.train.shuffle_batch([orig_images, images, mask, coord, pad_size],
-																			  batch_size=args.batch_size,
-																			  capacity=args.batch_size*2,
-																			  min_after_dequeue=args.batch_size
-																			 )
-
+	orig_imgs, perturbed_imgs, mask, coord, pad_size = tf.train.shuffle_batch([orig_images, images, mask, coord, pad_size], 
+										  batch_size=args.batch_size, 
+										  capacity=args.batch_size*2, 
+										  min_after_dequeue=args.batch_size
+										  )
 
 	return orig_imgs, perturbed_imgs, mask, coord, pad_size, data_count
 
@@ -86,9 +85,9 @@ def load_test_data(args):
 	images += mask
 
 	orig_imgs, mask, test_imgs = tf.train.batch([orig_images, mask, images],
-												batch_size=args.batch_size,
-												capacity=args.batch_size,
-											    )
+						    batch_size=args.batch_size,
+						    capacity=args.batch_size,
+						   )
 
 
 	return orig_imgs, test_imgs, mask, data_count

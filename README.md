@@ -2,6 +2,7 @@
 
 Tensorflow implementation of Globally and Locally Consistent Image Completion on [celebA](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html) dataset.  
 ![Alt text](images/network.JPG?raw=true "network")
+데이터 다운로드: https://www.kaggle.com/jessicali9530/celeba-dataset
 
 ## What's different from the paper  
 * smaller image input size (64x64)  
